@@ -1,0 +1,7 @@
+{
+  "name": "one-piece",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}

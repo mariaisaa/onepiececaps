@@ -1,0 +1,126 @@
+<ion-header class="no-border">
+  <ion-toolbar>
+    <ion-title class="ion-margin-top"> 
+      <img src="assets/images/sunny.png " alt="" class="sunny" >
+    </ion-title>
+
+      <ion-item mode="ios" lines="none" slot="end" class="item-lang">
+        <ion-select 
+        [(ngModel)]="selectedLanguage" 
+        (ionChange)="setLanguage()"
+        toggleIcon="globe"
+        interface="popover"
+        >
+          <ion-select-option value="es">{{ 'LANG.spanish'| translate }}</ion-select-option>
+          <ion-select-option value="en">{{ 'LANG.english'| translate }}</ion-select-option>
+        </ion-select>
+      </ion-item>
+    </ion-toolbar>
+</ion-header>
+
+<ion-content>
+<div class="shapedividers_com-4740"></div>
+
+  <ion-grid *ngIf="!limitError" fixed>
+    <ion-row>
+      <ion-col size="12" class="d-flex-center">
+
+
+        <div class="filters animate__animated animate__fadeInDown">
+
+          <ion-item lines="none" class="custom-input">
+            <ion-icon slot="start" name="search" color="primary"></ion-icon>
+            <ion-input 
+            (ionInput)="getEpisodeByNumber()"
+            [(ngModel)]="episode_number"
+            type="number"
+            labelPlacement="floating"
+            [label]=" 'HOME.search_episode_by_number' | translate"
+            debounce="1000"
+            ></ion-input>
+          </ion-item>
+
+          <ion-item *ngIf="!loading && !episode_number">
+            <ion-icon class="select-icon" slot="start" src="assets/images/isotipo.svg"></ion-icon>
+            <ion-select
+            [okText]=" 'BUTTONS.accept' | translate"
+            [cancelText]=" 'BUTTONS.cancel' | translate"
+            mode="ios" 
+            (ionChange)="getEpisodesBySeasons()" 
+            labelPlacement="stached"
+            [label]=" 'HOME.season' | translate"
+            [(ngModel)]="selectedSeason"
+            >
+              <ion-select-option *ngFor="let s of seasons"  [value]="s.id">{{ s.title}}</ion-select-option>
+            </ion-select>
+          </ion-item>
+        </div>
+
+      </ion-col>
+      <ion-col class="animate__animated animate__fadeInDown"  
+               *ngFor="let e of episodes" 
+                size-lg="4" 
+                size-md="6" 
+                size-sm="12" 
+                size="12"> <!-- medida de pantallas para mostrar capitulos-->
+        
+        
+        
+        <ion-card class="episode-card" mode="ios" >  
+            
+        <ion-avatar>
+          <img [src]="e.image" />
+        </ion-avatar>
+
+        <ion-card-content>
+          <p class="space-between">
+            {{'HOME.season' | translate}}: {{e.episode}}
+
+            <a [href]="e.url" target="_blank" rel="nopener noreferrer">
+
+              <ion-button color="light" mode="md" class="ion-no-padding play-btn" shape="round">
+                <ion-icon name="play" color="primary"></ion-icon>
+              </ion-button>
+
+            </a>
+
+          </p>
+
+          <div class="title"> {{ e.title }} </div>
+          <p> {{e.description | slice:0:100}}... </p>   <!-- se pasan solo los primeros 100 caracteres en la descripcion del cap-->
+
+        </ion-card-content>
+        </ion-card>
+
+    
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+
+
+  <!-- LOADING -->
+  <div  **ngIf="loading"  class="loading">
+    <ion-spinner color="primary" name="crescent"></ion-spinner>
+  </div>
+
+
+  <!-- no resultados -->
+  <div class="error" *ngIf="episode_number && !episodes.length" >
+    <ion-icon src="assets/images/mugi.png "> </ion-icon>
+    <h4> {{'ERROR_no_results' | translate}}</h4>
+  </div>
+
+  <!-- ======= Límite de peticiones mensuales superadas ======== -->
+ <ng-container *ngIf="limitError && !loading">
+    <div class="error">
+    <ion-icon src="assets/mugiwara.svg"></ion-icon>
+    <h4>{{'ERRORS.limit_exceeded' | translate}}</h4>
+    <p>
+        {{'ERRORS.upgrade_plan_in' | translate}} 
+        <a href="https://rapidapi.com/hub" target="_blank" rel="noopener noreferrer">RapidAPI</a>
+      </p>
+  </div>
+</ng-container>
+
+</ion-content>
